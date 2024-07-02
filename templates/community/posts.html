@@ -1,0 +1,79 @@
+
+{% extends "base.html" %}
+
+{% block title %}Community Posts - Data With Mo{% endblock %}
+
+{% load static %}
+
+{% block content %}
+
+<div class="container-sm-2">
+
+    <div class="text-center">
+        <div class="badge bg-gradient-primary-to-secondary text-white"><div class="text-uppercase">Data with Mo</div></div>
+        <h2 class="display-3 fw-bolder mb-3"><span class="text-gradient d-inline">Community Posts</span></h2>
+    </div>
+
+    <div class="text-center">
+        <div class="justify-content-center mb-2">
+            <a
+                class="btn btn-primary no-dark-mode-styling"
+                href="{% url 'community:create_url' %}"
+            >Create Post</a>
+        </div>
+
+        {% for post in data %}<!--posts %}-->
+
+            <a href="{% url 'community:post_details' post.id %}">
+                <div class="courseitem">
+                    <!--<strong class="text-gradient d-inline">{{ post.title }}</strong>
+                    <div class="space-between">
+                        <p>
+                            {{ post.upvotes }} 🔼
+                        </p>
+                        <p>
+                            {{ post.days_since }} {{ post.author.username }} &bull; {{ post.publish }}
+                        </p>
+                    </div>-->
+                    
+                    <div class="post-preview">
+                        <div class="upvote-preview">
+                            <!--<pv2>
+                                {{ post.upvotes }} 🔼
+                            </pv2>-->
+                            <div class="upvote-container">
+                                <span class="upvote-count">{{ post.upvotes }}</span>
+                                    <div class="upvote-icon-container">
+                                        <img src="{% static 'images/community/button-upvoted.png' %}" alt="Thumbs Up" class="upvote-icon">
+                                    </div>
+                            </div>
+                        </div>
+                        
+                        <div class="post-preview-details">
+                            <div class="post-preview-title text-gradient d-inline">
+                                <pv2>
+                                    {{ post.title }}
+                                </pv2>
+                            </div>
+                            <div class="post-preview-subtitle">
+                                <pv2>
+                                    {{ post.days_since }} {{ post.author.username }} &bull; {{ post.publish }}
+                                </pv2>
+                            </div>
+                        </div>
+                    </div>
+                
+                </div>
+            </a>
+
+        {% endfor %}
+
+        {% if data.paginator.count > 0 %}
+            {% include 'community/pagination.html' %}
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}

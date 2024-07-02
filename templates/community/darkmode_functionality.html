@@ -1,0 +1,48 @@
+{% csrf_token %}
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+    $(document).ready(function() {
+        const darkModeToggle = $('#dark-mode-toggle');
+        const body = $('body');
+
+        // Function to toggle dark mode class and save user preference to the server
+        darkModeToggle.on('click', function() {
+            body.toggleClass('dark-mode');
+
+            $.ajax({
+                type: 'POST',
+                url: '/accounts/toggle-dark-mode/',
+                data: {
+                    csrfmiddlewaretoken: "{{ csrf_token }}"
+                },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.dark_mode) {
+                        body.addClass('dark-mode');
+                    } else {
+                        body.removeClass('dark-mode');
+                    }
+                },
+                error: function(error) {
+                    console.log('Error:', error);
+                }
+            });
+        });
+
+        // Check user's preference from the server and set dark mode accordingly
+        $.ajax({
+            type: 'GET',
+            url: '/accounts/get-dark-mode/',
+            dataType: 'json',
+            success: function(response) {
+                darkModeToggle.prop("checked", response.dark_mode);
+                if (response.dark_mode) {
+                    body.addClass('dark-mode');
+                }
+            },
+            error: function(error) {
+                console.log('Error:', error);
+            }
+        });
+    });
+</script>

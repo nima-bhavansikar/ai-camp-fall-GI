@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}Settings{% endblock %}
+
+{% block content %}
+<div class="container px-5">
+    <h2 class="display-3 fw-bolder mb-3">
+        <span class="text-gradient d-inline">Settings</span>
+    </h2>
+
+    <div class="mb-2">
+        <p><a href="{% url 'username_change' %}">Change Username</a></p>
+        <p><a href="{% url 'email_change' %}">Change Email</a></p>
+    </div>
+
+    <div class="widget-row">
+        <label class="switch mb-4">
+            <input type="checkbox" id="dark-mode-toggle">
+            <span class="slider round"></span>
+        </label>
+        <p>Dark Mode</p>
+    </div>
+
+    <p>
+        <a
+            class="btn btn-primary"
+            href="{% url 'logout' %}"
+        >Log Out</a>
+    </p>
+</div>
+{% endblock %}

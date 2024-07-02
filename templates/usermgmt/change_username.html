@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Change Username{% endblock %}
+
+
+{% block content %}
+<div class="register-back">
+  <div class="register-content">
+    <h2 style="color: black;">Change Username</h2>
+    <form action="" method="post">
+      <div class="info">
+        {% csrf_token %}
+        {{ form.as_p }}
+      </div>
+      <br>
+      <button type="submit value=update_username">Update Username</button>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block footer %}{% endblock %}

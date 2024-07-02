@@ -1,0 +1,4 @@
+base.html and list.html are no longer used
+
+posts.html is the post list
+detail.html is a post page (named detail so that we don't mix posts and post together)

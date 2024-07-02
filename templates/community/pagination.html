@@ -1,0 +1,48 @@
+<div class="pagination-container">
+    <div class="pagination">
+        <span class="step-links">
+            <a
+                class="btn btn-primary {% if not data.has_previous %}disabled{% endif %}"
+                href="{% if data.has_previous %}?page=1{% endif %}"
+            >1</a>
+            <a
+                class="btn btn-primary {% if not data.has_previous %}disabled{% endif %}"
+                href="{% if data.has_previous %}?page={{ data.previous_page_number }}{% endif %}"
+            >&lt;</a>
+    
+            <!--<span class="current">
+                {{ data.number }}
+            </span>-->
+            <input
+                type="number"
+                class="page-input btn btn-primary"
+                value="{{ data.number }}"
+                min="1"
+                max="{{ data.paginator.num_pages }}"
+                onkeydown="if (event.keyCode == 13) window.location.href='?page=' + this.value;"
+                style="text-align: center;"
+            >
+    
+            <a
+                class="btn btn-primary {% if not data.has_next %}disabled{% endif %}"
+                href="{% if data.has_next %}?page={{ data.next_page_number }}{% endif %}"
+            >&gt;</a>
+            <a
+                class="btn btn-primary {% if not data.has_next %}disabled{% endif %}"
+                href="{% if data.has_next %}?page={{ data.paginator.num_pages }}{% endif %}"
+            >{{ data.paginator.num_pages }}</a>
+        </span>
+    </div>
+</div>
+
+<style>
+    /*.pagination .current {
+        margin: 0 10px;
+    }*/
+
+    .pagination-container {
+        display: flex;
+        justify-content: center;
+        padding: 25px;
+    }
+</style>

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Sign Up - Data With Mo{% endblock %}
+
+{% block content %}
+<div class="register-back">
+  <div class="register-content">
+    <h2>Welcome</h2>
+    <form method="post">
+      <div class="info">
+        {% csrf_token %}
+        {{ form.as_p }}
+      </div>
+      <br>
+      <button type="submit">Sign Up</button>
+    </form>
+    <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
+  </div>
+</div>
+{% endblock %}
+
+{% block footer %}{% endblock %}

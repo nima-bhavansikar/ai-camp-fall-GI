@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Change Email{% endblock %}
+
+
+{% block content %}
+<div class="register-back">
+  <div class="register-content">
+    <h2 style="color: black;">Change Email</h2>
+    <form action="" method="post">
+      <div class="info">
+        {% csrf_token %}
+        {{ form.as_p }}
+      </div>
+      <br>
+      <button type="submit value=update_email">Update Email </button>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block footer %}{% endblock %}

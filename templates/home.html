@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - Data With Mo{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+
+<!-- -->
+  <section id="scroll">
+    <div class="container px-5">
+
+<div class="container-sm-2">
+
+  <div class="text-center">
+    <div class="badge bg-gradient-primary-to-secondary text-white"><div class="text-uppercase">Data with Mo</div></div>
+    <h2 class="display-3 fw-bolder mb-3"><span class="text-gradient d-inline">{{ user.username }}'s Courses</span></h2>
+  </div>
+
+  <!--<section id="scroll">
+    <div class="container px-5">-->
+      <div class="text-center">
+        <!--<h2 class="display-3 fw-bolder mb-3">
+          <span class="text-gradient d-inline">Your Courses</span>
+        </h2>-->
+        
+        <!-- btn btn-primary btn-lg px-5 py-3 me-sm-3 fs-6 fw-bolder -->
+
+        <a href="{% url 'sandbox:main_sandbox' %}">
+          <div class="courseitem">
+            <strong class="text-gradient d-inline">Sandbox</strong>
+            <div class="mb-2"></div>
+            <p>A basic sandbox to do whatever you would like to.</p>
+          </div>
+        </a>
+
+        <a href="{% url 'sandbox:python_course' %}">
+          <div class="courseitem">
+            <strong class="text-gradient d-inline">Python Starter Course</strong>
+            <div class="mb-2"></div>
+            <p>Learn introductory Python concepts with fun themes to prepare yourself for using Python with Data.</p>
+          </div>
+        </a>
+
+        <div class="mb-2"></div>
+        <a href="{% url 'sandbox:course_two' %}">
+          <div class="courseitem">
+            <strong class="text-gradient d-inline">Course 1: LinkedIn Jobs</strong>
+            <div class="mb-2"></div>
+            <p>Learn a Linear Regression model with a LinkedIn Data Analytics Jobs dataset.</p>
+          </div>
+        </a>
+        <div class="mb-2"></div>
+        <a href="{% url 'sandbox:course_three' %}">
+          <div class="courseitem">
+            <strong class="text-gradient d-inline">Course 2: Credit Card Churn</strong>
+            <div class="mb-2"></div>
+            <p>Learn a Support Vector Machine with a Credit Card Churn dataset.</p>
+          </div>
+        </a>
+        <div class="mb-2"></div>
+        <a href="{% url 'sandbox:course_four' %}">
+          <div class="courseitem">
+            <strong class="text-gradient d-inline">Course 3: Stocks</strong>
+            <div class="mb-2"></div>
+            <p>Learn a Logistic Regression model with a Stock Data dataset.</p>
+          </div>
+        </a>
+        <div class="mb-2"></div>
+
+        </div>
+      </div>
+    <!--</div>
+  </section>-->
+
+</div>
+
+{% else %}
+  <div id="landing">
+    <div class="column" style="clear: both;">
+      <h1 id="web_title">Real World Data Analytics</h1>
+      <p id="web_description"> Data knowledge and skills that you can actually apply in the real world - no jargon, no fluff, just the useful stuff </p>
+      <a href="{% url 'login' %}" class="register">Log In</a> <a href="{% url 'signup' %}" class="register">Sign Up</a>
+    </div>
+    {% load static %}
+    <div class="column">
+      <img id="landing_img" src="{% static 'Vector.png' %}">
+    </div>
+  </div>
+{% endif %}
+{% endblock %}

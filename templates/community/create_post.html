@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Create Post - Data With Mo{% endblock %}
+
+{% block content %}
+
+<div class="container-sm-2">
+
+    <div class="text-center">
+        <div class="badge bg-gradient-primary-to-secondary text-white mb-4"><div class="text-uppercase">Data with Mo</div></div>
+    </div>
+    <h2 class="display-3 fw-bolder mb-3"><span class="text-gradient d-inline">Create Post</span></h2>
+    {% include "community/post_form.html" %}
+
+    <!--<a href="/community/">
+        Go back to the Posts
+    </a>-->
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+<!--{% load tz %}-->
+{% load static %}
+
+{% block title %}{{ post.title }} - Data With Mo{% endblock %}
+
+{% block content %}
+
+<div class="container-sm-2">
+
+    <div class="text-center">
+        <div class="badge bg-gradient-primary-to-secondary text-white mb-4"><div class="text-uppercase">Community</div></div>
+    </div>
+    <h2 class="display-6 fw-bolder mb-3"><span class="text-gradient d-inline">{{ post.title }}</span></h2>
+    <div class="space-between mb-3">
+        <div class="left-element">
+            
+            <!--<button
+                class="upvote-button{% if post.upvoted_by_user %}button-not-upvoted{% else %}button-upvoted{% endif %}"
+                data-type="post" data-post-id="{{ post.id }}"
+            >{{ post.upvotes }} 🔼</button>-->
+            <!--<div class="upvote-container">
+                <div class="upvote-count">{{ post.upvotes }}</div>
+                <div class="upvote-button-container">
+                    <img
+                        class="upvote-button{% if post.upvoted_by_user %} button-upvoted{% endif %}"
+                        src="{% if post.upvoted_by_user %}button-upvoted.png{% else %}button-not-upvoted.png{% endif %}"
+                        alt="Upvote"
+                        data-type="post" data-post-id="{{ post.id }}"
+                    />
+                </div>
+            </div>-->
+
+            <!--<div class="upvote-container">
+                <span class="upvote-count">{{ post.upvotes }}</span>
+                <button
+                    class="upvote-button{% if post.upvoted_by_user %} button-not-upvoted{% else %} button-upvoted{% endif %}"
+                    data-type="post" data-post-id="{{ post.id }}"
+                >
+                    <img src="{% static 'assets/button-not-upvoted.png' %}" alt="Thumbs Up" class="upvote-icon">
+                </button>
+            </div>-->
+            <div class="upvote-container">
+                <span class="upvote-count">{{ post.upvotes }}</span>
+                <button class="upvote-button {% if post.upvoted_by_user %}button-upvoted{% else %}button-not-upvoted{% endif %}" data-type="post" data-post-id="{{ post.id }}">
+                    <div class="upvote-icon-container">
+                        <img src="{% if post.upvoted_by_user %}{% static 'images/community/button-upvoted.png' %}{% else %}{% static 'images/community/button-not-upvoted.png' %}{% endif %}" alt="Thumbs Up" class="upvote-icon">
+                        <div class="hover-circle"></div>
+                    </div>
+                </button>
+            </div>
+
+        </div>
+        <div class="right-element">
+            <b>
+                {{ post.author.username}} &bull; {{ post.publish }}
+            </b>
+        </div>
+    </div>
+    
+            {{ post.body|markdown|safe }}
+
+            {% if post.shared_link %}
+                <div class="mx-auto text-center">
+                    <h6 class="fw-bolder"><a class="blue-link d-inline" href="http://127.0.0.1:8000/community/demo_share/{{ post.shared_link.id }}"
+                        target="_blank">Attached Notebook Link:</a></h6>
+
+                    <iframe src="http://127.0.0.1:8000/community/demo_share/{{ post.shared_link.id }}" title="sandbox"></iframe>
+                </div>
+            {% endif %}
+
+            {% with data.paginator.count as total_comments %}
+                <h4>
+                    {{ total_comments }} comment{{ total_comments|pluralize }}
+                </h4>
+            {% endwith %}
+
+            {% for comment in data %}<!--comments %}-->
+                                
+                {{ comment.body|markdown|safe }}
+
+                <div class="space-between">
+                    <div class="left-element">
+                        <!--<button
+                            class="upvote-button{% if post.upvoted_by_user %}button-not-upvoted{% else %}button-upvoted{% endif %}"
+                            data-type="comment" data-comment-id="{{ comment.id }}"
+                        >{{ comment.upvotes }} 🔼</button>-->
+                        <div class="upvote-container">
+                            <span class="upvote-count">{{ comment.upvotes }}</span>
+                            <button class="upvote-button {% if comment.upvoted_by_user %}button-upvoted{% else %}button-not-upvoted{% endif %}" data-type="comment" data-comment-id="{{ comment.id }}">
+                                <div class="upvote-icon-container">
+                                    <img src="{% if comment.upvoted_by_user %}{% static 'images/community/button-upvoted.png' %}{% else %}{% static 'images/community/button-not-upvoted.png' %}{% endif %}" alt="Thumbs Up" class="upvote-icon">
+                                    <div class="hover-circle"></div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="right-element">
+                        <p>
+                            <!--Comment {{ forloop.counter }} by -->
+                            {{ comment.author.username }} &bull; {{ comment.created }}
+                        </p>
+                    </div>
+                </div>
+
+                <hr>
+            
+        {% empty %}
+            <p>There are no comments.</p>
+        {% endfor %}
+
+        {% if data.paginator.count > 0 %}
+            {% include 'community/pagination.html' %}
+        {% endif %}
+
+        {% if user.is_authenticated %}
+
+            {% include "community/comment_form.html" %}
+            {% include 'community/upvote_functionality.html' %}
+
+        {% endif %}
+
+    <!--<a href="/community/">
+        Go back to the Posts
+    </a>-->
+
+</div>
+
+<style>
+    iframe {
+      width: 100%;
+      max-width: 800px;
+      border: none;
+
+      height: 500px;
+      
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+    }
+</style>
+
+{% endblock %}

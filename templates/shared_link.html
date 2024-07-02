@@ -1,0 +1,257 @@
+{% load static %}
+
+<link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.png' %}">
+
+{% include 'community/darkmode_functionality.html' %}
+
+<link rel="stylesheet" href="{% static 'css/gem.css' %}">
+<link rel="stylesheet" href="{% static 'css/pygments_style.css' %}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter" rel="stylesheet">
+
+<title>{% block title %}{{ shared_link.author.username }}'s {{ name }}{% endblock %}</title>
+
+{% block content %}
+
+<div class="mb-3"></div>
+
+<div class="text-center">
+    <h6 class="fw-bolder mb-2"><span class="text-gradient d-inline">{{ shared_link.author.username }}'s {{ name }}</span></h6>
+
+    <!--<p class="text-gradient">may take time to load</p>-->
+</div>
+
+<script>
+    setTimeout(toggle, 3000);
+    function toggle() {
+        window.frames.jupyterlab.postMessage({ type: 'from-host-to-iframe', dark: '{{user.userdata.darkmode}}'});
+    }
+</script>
+
+<div class="holder">
+    
+    <div>
+        <div class="load-widget">
+            {% comment %} This is strange only works when add domain ***Remember to check when have actually domain name*** {% endcomment %}
+            {% if shared_link.course_number == 0 %}
+                <embed class='iFrameSandbox' name="jupyterlab" width='100%' height='700' title="sandbox"
+                src="http://127.0.0.1:8000/public/jupyter/lab/index.html"></embed>
+            {% else %}
+                <embed class='hide-sidebar iFrameSandbox' name="jupyterlab" width='100%' height='700' title="sandbox"
+                src="http://127.0.0.1:8000/public/jupyter/lab/index.html?path=Course_{{ shared_link.course_number }}.ipynb"></embed>
+            {% endif %}
+        </div>
+        <div class="loading-text text-gradient display-6">Loading...</div>
+    </div>
+    <script>
+    /*/Saves it when closing the tab as well as saving it when you press ctrl-s
+    window.addEventListener('beforeunload', function(event) {
+        save()
+    });
+    document.onkeyup = function(e) {
+        if (e.ctrlKey && e.which == 83) {
+            console.log("saving...")
+            save()
+        }
+    };*/
+    //Clears all the data from the db and then loads in the user data
+    do_loading_functions()
+    function do_loading_functions() {
+        clear()
+        restart_if_has_data()
+        load_user_data()
+        reload_three_times()
+    }
+    function reload_three_times() {
+        if ( window.localStorage ) {
+            if(!localStorage.getItem('firstLoad')) {
+                console.log("")
+                localStorage['firstLoad'] = false;
+                window.location.reload();
+            }
+            else if (localStorage['firstLoad'] == false) {
+                console.log("")
+                localStorage['firstLoad'] = true;
+                wait_one_second();
+                window.location.reload();
+            }
+            else
+                localStorage.removeItem('firstLoad');
+        }
+    }
+    function load_user_data() {
+        let data = "{{ shared_link.code }}"
+        
+        data = htmlDecode(data)
+        data = JSON.parse(data)
+        const request = indexedDB.open('JupyterLite Storage');
+        request.onsuccess = function (event) {
+            const db = event.target.result;
+            const transaction = db.transaction('files', "readwrite");
+            const objectStore = transaction.objectStore('files');
+            for (const key in data) {
+                if (data.hasOwnProperty(key)) {
+                    const request = objectStore.add(data[key], key);
+                }
+            }   
+        };
+    }       
+    function htmlDecode(input) {
+        input = input.substring(2);
+        input = input.replace(/#x27;/g, "");
+        input = input.slice(0, -1);
+        var doc = new DOMParser().parseFromString(input, "text/html");
+        return doc.documentElement.textContent;
+    }
+    function restart_if_has_data() {
+        // Open a database connection
+        var request = indexedDB.open('JupyterLite Storage', 1);
+        // Handle the database open success event
+        request.onsuccess = function(event) {
+            var db = event.target.result;
+  
+            // Open a transaction on the object store
+            var transaction = db.transaction('files', 'readonly');
+            var objectStore = transaction.objectStore('files');
+  
+            // Create a request to count the records in the object store
+            var countRequest = objectStore.count();
+  
+            // Handle the count success event
+            countRequest.onsuccess = function(event) {
+                var count = event.target.result;
+                if (count === 0) {
+                    // The object store is clear (empty)
+                    console.log('Object store is empty.');
+                } 
+                else {
+                    location.reload();
+                }
+            };
+        };
+    }
+    function clear() {
+        const request = indexedDB.open('JupyterLite Storage');
+        request.onsuccess = function (event) {
+            // Opens an object in DB
+            const db = event.target.result;
+            const transaction = db.transaction('files', 'readwrite');
+            const objectStore = transaction.objectStore('files');
+            objectStore.clear()
+      };
+  
+    }
+    /*
+    function save() {
+        //gets all the files in the database and then stores it in the user model as a string
+        const request = indexedDB.open('JupyterLite Storage');
+        // Create an object to store the key-value pairs
+        const filesObject = {};
+        // If accessing the Database was a success
+        request.onsuccess = function (event) {
+            // Opens an object in DB
+            const db = event.target.result;
+            const transaction = db.transaction('files', 'readonly');
+            const objectStore = transaction.objectStore('files');
+            // Creates a list of each key in the object
+            const request = objectStore.openCursor();
+            request.onsuccess = function (event) {
+                const cursor = event.target.result;
+                if (cursor) {
+                    //Loops through each result
+                    const value = cursor.value;
+                    const key = cursor.key;
+    
+                    filesObject[key] = value;
+    
+                    cursor.continue();
+                } 
+                else {
+                    //Calls when all the results are listed
+                    if ({{course}} == 0){
+                        //Calls when all the results are listed
+                        console.log("Finished listing");
+                        const jsonString = JSON.stringify(filesObject);
+                        console.log(jsonString);
+                        fetch('{% url "sandbox:save_data" %}', {
+                             method: 'POST',
+                            headers: {
+                                'X-CSRFToken': '{{ csrf_token }}',  // Include CSRF token for security
+                                'Content-Type': 'application/json', // Specify content type as JSON
+                            },
+                            body: jsonString
+                        })
+                    }
+                    else if ({{course}} == 1) {
+                        //Calls when all the results are listed
+                        console.log("Finished listing");
+                        const jsonString = JSON.stringify(filesObject);
+                        console.log(jsonString);
+                        fetch('{% url "sandbox:save_course_one_data" %}', {
+                             method: 'POST',
+                            headers: {
+                                'X-CSRFToken': '{{ csrf_token }}',  // Include CSRF token for security
+                                'Content-Type': 'application/json', // Specify content type as JSON
+                            },
+                            body: jsonString
+                        })
+                    }
+                    else if ({{course}} == 2) {
+                        //Calls when all the results are listed
+                        console.log("Finished listing");
+                        const jsonString = JSON.stringify(filesObject);
+                        console.log(jsonString);
+                        fetch('{% url "sandbox:save_course_two_data" %}', {
+                             method: 'POST',
+                            headers: {
+                                'X-CSRFToken': '{{ csrf_token }}',  // Include CSRF token for security
+                                'Content-Type': 'application/json', // Specify content type as JSON
+                            },
+                            body: jsonString
+                        })
+                    }
+                    else if ({{course}} == 3) {
+                        //Calls when all the results are listed
+                        console.log("Finished listing");
+                        const jsonString = JSON.stringify(filesObject);
+                        console.log(jsonString);
+                        fetch('{% url "sandbox:save_course_three_data" %}', {
+                             method: 'POST',
+                            headers: {
+                                'X-CSRFToken': '{{ csrf_token }}',  // Include CSRF token for security
+                                'Content-Type': 'application/json', // Specify content type as JSON
+                            },
+                            body: jsonString
+                        })
+                    }
+                    else if ({{course}} == 4) {
+                        //Calls when all the results are listed
+                        console.log("Finished listing");
+                        const jsonString = JSON.stringify(filesObject);
+                        console.log(jsonString);
+                        fetch('{% url "sandbox:save_course_four_data" %}', {
+                             method: 'POST',
+                            headers: {
+                                'X-CSRFToken': '{{ csrf_token }}',  // Include CSRF token for security
+                                'Content-Type': 'application/json', // Specify content type as JSON
+                            },
+                            body: jsonString
+                        })
+                    }
+                }
+            };
+    
+            // Handle any errors
+            request.onerror = function (event) {
+                console.error('Error:', event.target.error);
+            };
+        };
+    
+    }
+    */
+    </script>
+    <!--<button onclick="save()">Save</button>-->
+</div>
+
+{% endblock %}

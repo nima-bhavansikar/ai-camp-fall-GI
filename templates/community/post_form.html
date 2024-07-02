@@ -1,0 +1,71 @@
+{% if user.is_authenticated %}
+
+<form id="postForm" action="{% url 'community:create_post' %}" method="post">
+    <!-- create_post to create_url -->
+    <div class="mb-4">
+        {{ form.title }}
+    </div>
+    <div class="mb-4">
+        {{ form.body }}
+    </div>
+    <div class="mb-4">
+        <input type="url" name="notebook_link" placeholder="Notebook Link (optional)" class="form-control" id="id_notebook_link">
+    </div>
+    {% csrf_token %}
+    <div class="to-right">
+        <p><input type="submit" class="btn btn-primary no-dark-mode-styling" value="Post"></p>
+    </div>
+</form>
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $("#postForm").submit(function (event) {
+            event.preventDefault();
+
+            var notebookLink = $("#id_notebook_link").val();
+
+            isValidNotebookLink(notebookLink, function (isValid) {
+                if (!isValid) {
+                    alert("Invalid notebook link. Please enter a valid notebook link.");
+                } else {
+                    $("#postForm")[0].submit();
+                }
+            });
+        });
+
+        function isValidNotebookLink(notebookLink, callback) {
+            if (notebookLink == "") {
+                callback(true);
+            } else if (!notebookLink.includes("/demo_share/")) {
+                callback(false);
+            } else {
+                var parts = notebookLink.split("/demo_share/");
+                var notebookId = parts[1].split("/")[0];
+
+                $.ajax({
+                    url: "/community/check_notebook_link/",
+                    method: "POST",
+                    data: {
+                        notebook_id: notebookId,
+                        csrfmiddlewaretoken: "{{ csrf_token }}",
+                    },
+                    success: function (data) {
+                        callback(data.isValid);
+                    },
+                    error: function () {
+                        callback(false);
+                    },
+                });
+            }
+        }
+    });
+</script>
+
+ 
+
+{% else %}
+    <p>You are not logged in</p>
+    <a href="{% url 'login' %}">Log In</a>
+{% endif %}

@@ -1,0 +1,16 @@
+<h4>Add a new comment</h5>
+
+{% if user.is_authenticated %}
+  <form action="{% url 'community:comment_for_post' post.id %}" method="post">
+    <div class="mb-4">
+      {{ form.body }}
+    </div>
+    {% csrf_token %}
+    <div class="to-right">
+      <p><input type="submit" class="btn btn-primary no-dark-mode-styling"value="Add comment"></p>
+    </div>
+  </form>
+{% else %}
+  <p>You are not logged in</p>
+  <a href="{% url 'login' %}">Log In</a>
+{% endif %}

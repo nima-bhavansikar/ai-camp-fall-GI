@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}{{ course_data.title }}{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+
+<div class="text-center">
+    <h2 class="display-3 fw-bolder mb-3"><span class="text-gradient d-inline">{{ course_data.title }}</span></h2>
+</div>
+
+<div class="holder">
+    <!--<div class="bar">
+        <h1 class="text-gradient d-inline">Hi {{ user.username }}!</h1> 
+    </div>-->
+    <div class="coursewindow">
+        <iframe src="{{ course_data.embed_url }}" title="sandbox"></iframe>
+    </div>
+</div>
+{% else %}
+  <p>You are not logged in</p>
+  <a href="{% url 'login' %}">Log In</a>
+{% endif %}
+{% endblock %}

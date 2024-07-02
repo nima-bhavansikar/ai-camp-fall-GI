@@ -1,0 +1,38 @@
+{% load static %}
+
+
+<!DOCTYPE html>
+<html height="100%">
+<head>
+  <meta charset="utf-8">
+  <link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.png' %}">
+  <title>{% block title %}Data With Mo{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/gem.css' %}">
+  <link rel="stylesheet" href="{% static 'css/pygments_style.css' %}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter" rel="stylesheet">
+</head>
+<body>
+
+  {% if user.is_authenticated %}
+  <nav>
+    <!--<div class="row gx-5 align-items-center">-->
+      <a href="{% url 'home' %}">Home</a>
+      <a href="{% url 'community:list_of_posts' %}">Community</a>
+      <a href="{% url 'settings' %}" id="profilelink">
+          {{ user.username }}
+      </a>
+    <!--</div>-->
+  </nav>
+  {% endif %}
+  <main>
+    {% block content %}
+    {% endblock %}
+  </main>
+</body>
+</html>
+
+<!--{% csrf_token %}
+<script src="{% static 'js/darkmode.js' %}"></script>-->
+{% include 'community/darkmode_functionality.html' %}
